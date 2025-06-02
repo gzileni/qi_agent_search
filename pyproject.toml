@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "py_agent_search"
-version = "1.0.0"
+version = "1.0.2"
 description = "A Python package for agent ai to search in the web, wikipedia and youtube"
 authors = [
     { name="Giuseppe Zileni", email="giuseppe.zileni@gmail.com" }
@@ -12,7 +12,7 @@ authors = [
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.9"
 license-files = ["LICENSE.md"]
-keywords = ["aws", "s3", "utilities"]
+keywords = ["langgraph", "agent ai", "search", "web search", "wikipedia search", "youtube search", "langchain"]
 classifiers = ['Programming Language :: Python :: 3', 'Operating System :: OS Independent']
 dependencies = [
     "aiohappyeyeballs==2.6.1",

@@ -14,3 +14,5 @@ __pycache__/
 *.sqlite3
 *.swp
 *.swo
+dist/
+build/
