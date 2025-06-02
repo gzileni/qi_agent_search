@@ -1,0 +1,16 @@
+.venv/
+pypi_deploy.sh
+install_build.sh
+__pycache__/
+.vscode/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+*.log
+*.db
+*.sqlite3
+*.swp
+*.swo

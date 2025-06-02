@@ -1,0 +1,83 @@
+services:
+
+  redis:
+    container_name: redis
+    restart: always
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-as-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    networks:
+      - agent-search-network
+
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - agent-search-network
+
+  promtail:
+    container_name: promtail
+    image: grafana/promtail:latest
+    volumes:
+      - loki-as-log-data:/var/log
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - agent-search-network
+
+  grafana:
+    container_name: grafana
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_FEATURE_TOGGLES_ENABLE=alertingSimplifiedRouting,alertingQueryAndExpressionsStepMode
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /etc/grafana/provisioning/datasources
+        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+        apiVersion: 1
+        datasources:
+        - name: Loki
+          type: loki
+          access: proxy 
+          orgId: 1
+          url: http://loki:3100
+          basicAuth: false
+          isDefault: true
+          version: 1
+          editable: false
+        EOF
+        /run.sh
+    image: grafana/grafana:latest
+    volumes:
+      - grafana-as-loki-data:/var/lib/grafana  # Volume persistente per i dati di Grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - agent-search-network
+
+volumes:
+  loki-as-log-data:
+  grafana-as-loki-data:
+  redis-as-data:
+
+networks:
+  agent-search-network:
+    name: agent-search-network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.6.0/24
